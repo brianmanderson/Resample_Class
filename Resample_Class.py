@@ -37,7 +37,7 @@ class Resample_Class(object):
         return output
 
 if __name__ == '__main__':
-    # xxx = 1
+    xxx = 1
     # Resample = Resample_Class()
     # image = np.zeros([68, 512,512])
     # image[30:40,126:256,125:256] = 1
