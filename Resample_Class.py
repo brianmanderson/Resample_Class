@@ -10,20 +10,24 @@ class Resample_Class(object):
     def resample_image(self,input_image, input_spacing=(0.975,0.975,2.5),output_spacing=(0.975,0.975,2.5),
                        is_annotation=False):
         '''
-        :param input_image: Image of the shape # images, rows, cols
-        :param spacing: Goes in the form of row spacing, col spacing, and then z_images (I know it's confusing..)
+        :param input_image: Image of the shape # images, rows, cols, or sitk.Image
+        :param spacing: Goes in the form of (row_dim, col_dim, z_dim) (I know it's confusing..)
         :param is_annotation: Whether to use Linear or NearestNeighbor, Nearest should be used for annotations
         :return:
         '''
         output_spacing = np.asarray(output_spacing)
         self.Resample.SetOutputSpacing(output_spacing)
         if is_annotation:
+            if type(input_image) is np.ndarray:
+                input_image = input_image.astype('int8')
             self.Resample.SetInterpolator(sitk.sitkNearestNeighbor)
         else:
             self.Resample.SetInterpolator(sitk.sitkLinear)
-
-        image = sitk.GetImageFromArray(input_image)
-        image.SetSpacing(input_spacing)
+        if type(input_image) is np.ndarray:
+            image = sitk.GetImageFromArray(input_image)
+            image.SetSpacing(input_spacing)
+        else:
+            image = input_image
         orig_size = np.array(image.GetSize(),dtype=np.int)
         orig_spacing = np.asarray(image.GetSpacing())
         new_size = orig_size * (orig_spacing / output_spacing)
@@ -33,7 +37,8 @@ class Resample_Class(object):
         self.Resample.SetOutputDirection(image.GetDirection())
         self.Resample.SetOutputOrigin(image.GetOrigin())
         output = self.Resample.Execute(image)
-        output = sitk.GetArrayFromImage(output)
+        if type(input_image) is np.ndarray:
+            output = sitk.GetArrayFromImage(output)
         return output
 
 if __name__ == '__main__':
