@@ -1,7 +1,7 @@
 import SimpleITK as sitk
 import numpy as np
 
-class Resample_Class(object):
+class Resample_Class_Object(object):
     '''
     Feed in images in form of #images, rows, cols
     '''
