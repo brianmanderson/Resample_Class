@@ -7,7 +7,7 @@ class Resample_Class_Object(object):
     '''
     def __init__(self):
         self.Resample = sitk.ResampleImageFilter()
-    def resample_image(self,input_image, ref_handle=None, input_spacing=(0.975,0.975,2.5),output_spacing=(0.975,0.975,2.5),
+    def resample_image(self,input_image, ref_handle=None, input_spacing=None,output_spacing=(0.975,0.975,2.5),
                        is_annotation=False):
         '''
         :param input_image: Image of the shape # images, rows, cols, or sitk.Image
@@ -17,9 +17,10 @@ class Resample_Class_Object(object):
         '''
         if type(input_image) is np.ndarray:
             image = sitk.GetImageFromArray(input_image)
-            image.SetSpacing(input_spacing)
         else:
             image = input_image
+        if input_spacing is not None:
+            image.SetSpacing(input_spacing)
         if ref_handle is not None:
             output_spacing = ref_handle.GetSpacing()
             image.SetDirection(ref_handle.GetDirection())
