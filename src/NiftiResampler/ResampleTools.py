@@ -4,9 +4,9 @@ import SimpleITK as sitk
 import numpy as np
 
 
-class Resampler(object):
+class ImageResampler(object):
     def __init__(self):
-        self.Resample = sitk.ResampleImageFilter()
+        self.Resampler = sitk.ResampleImageFilter()
     def resample_image(self, input_image, ref_handle=None, input_spacing=None,output_spacing=(0.975,0.975,2.5),
                        is_annotation=False):
         """
@@ -25,13 +25,13 @@ class Resampler(object):
             output_spacing = ref_handle.GetSpacing()
             image.SetDirection(ref_handle.GetDirection())
             image.SetOrigin(ref_handle.GetOrigin())
-        self.Resample.SetOutputSpacing(output_spacing)
+        self.Resampler.SetOutputSpacing(output_spacing)
         if is_annotation:
             if type(input_image) is np.ndarray:
                 input_image = input_image.astype('int8')
-            self.Resample.SetInterpolator(sitk.sitkNearestNeighbor)
+            self.Resampler.SetInterpolator(sitk.sitkNearestNeighbor)
         else:
-            self.Resample.SetInterpolator(sitk.sitkLinear)
+            self.Resampler.SetInterpolator(sitk.sitkLinear)
         if ref_handle is None:
             output_spacing = np.asarray(output_spacing)
             orig_size = np.array(image.GetSize(),dtype=np.int)
@@ -41,16 +41,16 @@ class Resampler(object):
             new_size = [np.int(i) for i in new_size]
         else:
             new_size = ref_handle.GetSize()
-        self.Resample.SetSize(new_size)
-        self.Resample.SetOutputDirection(image.GetDirection())
-        self.Resample.SetOutputOrigin(image.GetOrigin())
-        output = self.Resample.Execute(image)
+        self.Resampler.SetSize(new_size)
+        self.Resampler.SetOutputDirection(image.GetDirection())
+        self.Resampler.SetOutputOrigin(image.GetOrigin())
+        output = self.Resampler.Execute(image)
         if type(input_image) is np.ndarray:
             output = sitk.GetArrayFromImage(output)
         return output
 
 
-class Resample_Class_Object(Resampler):
+class Resample_Class_Object(ImageResampler):
     def __init__(self):
         print('Please move from using Resample_Class_Object to Resampler, same arguments are passed')
         super().__init__()
