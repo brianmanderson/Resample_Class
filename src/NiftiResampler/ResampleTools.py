@@ -20,9 +20,6 @@ class ImageResampler(object):
         assert ref_resampling_handle is not None or output_spacing is not None, 'You need to either provide a ' \
                                                                                 'reference handle  for resample, or ' \
                                                                                 'output_spacing'
-        if ref_resampling_handle:
-            input_image_handle.SetDirection(ref_resampling_handle.GetDirection())
-            input_image_handle.SetOrigin(ref_resampling_handle.GetOrigin())
         if output_spacing is None:
             output_spacing = ref_resampling_handle.GetSpacing()
         self.Resampler.SetOutputSpacing(output_spacing)
@@ -30,17 +27,17 @@ class ImageResampler(object):
             self.Resampler.SetInterpolator(sitk.sitkLinear)
         elif interpolator is 'Nearest':
             self.Resampler.SetInterpolator(sitk.sitkNearestNeighbor)
-        if ref_resampling_handle is None:
+        if ref_resampling_handle is not None:
+            self.Resampler.SetOutputDirection(ref_resampling_handle.GetDirection())
+            self.Resampler.SetOutputOrigin(ref_resampling_handle.GetOrigin())
+            self.Resampler.SetSize(ref_resampling_handle.GetSize())
+        else:
             orig_size = np.array(input_image_handle.GetSize(),dtype=np.int)
             orig_spacing = np.asarray(input_image_handle.GetSpacing())
             new_size = orig_size * (orig_spacing / output_spacing)
             new_size = np.ceil(new_size).astype(np.int)  # Image dimensions are in integers
             new_size = [np.int(i) for i in new_size]
-        else:
-            new_size = ref_resampling_handle.GetSize()
-        self.Resampler.SetSize(new_size)
-        self.Resampler.SetOutputDirection(input_image_handle.GetDirection())
-        self.Resampler.SetOutputOrigin(input_image_handle.GetOrigin())
+            self.Resampler.SetSize(new_size)
         output = self.Resampler.Execute(input_image_handle)
         return output
 
