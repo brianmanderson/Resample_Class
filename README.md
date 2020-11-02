@@ -1,12 +1,12 @@
 "# Resample_Class" 
-For resampling images and annotations for deep learning
-
-Below is an example of turning a cube on a high resolution image into a low resolution image
-
+For resampling nifti images (likely for medical purposes)
+## Installation
     pip install NiftiResampler
-    
-    from NiftiResampler.ResampleTools import ImageResampler
+### Usage
+    from NiftiResampler.ResampleTools import ImageResampler, sitk
     Resampler = ImageResampler()
-    image = np.zeros([68, 512,512])
-    image[30:40,126:256,125:256] = 1
-    resampled = Resampler.resample_image(image,input_spacing=(0.975/2,0.975/2,2.5),output_spacing=(0.975,0.975,5),is_annotation=True)
+    base_image = sitk.ReadImage(image_path)
+    desired_dimensions = (0.975, 0.975, 5.0)
+    
+    resampled = Resampler.resample_image(base_image,input_spacing=(0.975/2,0.975/2,2.5),output_spacing=(0.975,0.975,5),is_annotation=True)
+
