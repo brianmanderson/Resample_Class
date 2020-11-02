@@ -8,5 +8,5 @@ For resampling nifti images (likely for medical purposes)
     base_image = sitk.ReadImage(image_path)
     desired_dimensions = (0.975, 0.975, 5.0)
     
-    resampled = Resampler.resample_image(base_image,input_spacing=(0.975/2,0.975/2,2.5),output_spacing=(0.975,0.975,5),is_annotation=True)
+    resampled = Resampler.resample_image(input_image_handle=base_image,ref_resampling_handle=None,output_spacing=(0.975,0.975,5),interpolator='Linear')
 
