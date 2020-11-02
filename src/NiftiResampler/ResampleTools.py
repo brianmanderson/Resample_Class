@@ -7,46 +7,41 @@ import numpy as np
 class ImageResampler(object):
     def __init__(self):
         self.Resampler = sitk.ResampleImageFilter()
-    def resample_image(self, input_image, ref_handle=None, input_spacing=None,output_spacing=(0.975,0.975,2.5),
-                       is_annotation=False):
+    def resample_image(self, input_image_handle, ref_resampling_handle=None, output_spacing=None,
+                       interpolator='Linear'):
         """
-        :param input_image: Image of the shape # images, rows, cols, or sitk.Image
-        :param spacing: Goes in the form of (row_dim, col_dim, z_dim) (I know it's confusing..)
-        :param is_annotation: Whether to use Linear or NearestNeighbor, Nearest should be used for annotations
+        :param input_image_handle: SimpleITK image handle that will be resampled
+        :param ref_resampling_handle: a reference SimpleITK image handle that has the desired dimensions
+        :param output_spacing: a tuple of spacing that is desired for the input_image to be resampled to
+        :param interpolator: 'Linear' or 'Nearest'
         :return:
         """
-        if type(input_image) is np.ndarray:
-            image = sitk.GetImageFromArray(input_image)
-        else:
-            image = input_image
-        if input_spacing is not None:
-            image.SetSpacing(input_spacing)
-        if ref_handle is not None:
-            output_spacing = ref_handle.GetSpacing()
-            image.SetDirection(ref_handle.GetDirection())
-            image.SetOrigin(ref_handle.GetOrigin())
+        assert type(input_image_handle) is sitk.Image, 'You need to pass a SimpleITK image handle!'
+        assert ref_resampling_handle is not None or output_spacing is not None, 'You need to either provide a ' \
+                                                                                'reference handle  for resample, or ' \
+                                                                                'output_spacing'
+        if ref_resampling_handle:
+            input_image_handle.SetDirection(ref_resampling_handle.GetDirection())
+            input_image_handle.SetOrigin(ref_resampling_handle.GetOrigin())
+        if output_spacing is None:
+            output_spacing = ref_resampling_handle.GetSpacing()
         self.Resampler.SetOutputSpacing(output_spacing)
-        if is_annotation:
-            if type(input_image) is np.ndarray:
-                input_image = input_image.astype('int8')
-            self.Resampler.SetInterpolator(sitk.sitkNearestNeighbor)
-        else:
+        if interpolator is 'Linear':
             self.Resampler.SetInterpolator(sitk.sitkLinear)
-        if ref_handle is None:
-            output_spacing = np.asarray(output_spacing)
-            orig_size = np.array(image.GetSize(),dtype=np.int)
-            orig_spacing = np.asarray(image.GetSpacing())
+        elif interpolator is 'Nearest':
+            self.Resampler.SetInterpolator(sitk.sitkNearestNeighbor)
+        if ref_resampling_handle is None:
+            orig_size = np.array(input_image_handle.GetSize(),dtype=np.int)
+            orig_spacing = np.asarray(input_image_handle.GetSpacing())
             new_size = orig_size * (orig_spacing / output_spacing)
             new_size = np.ceil(new_size).astype(np.int)  # Image dimensions are in integers
             new_size = [np.int(i) for i in new_size]
         else:
-            new_size = ref_handle.GetSize()
+            new_size = ref_resampling_handle.GetSize()
         self.Resampler.SetSize(new_size)
-        self.Resampler.SetOutputDirection(image.GetDirection())
-        self.Resampler.SetOutputOrigin(image.GetOrigin())
-        output = self.Resampler.Execute(image)
-        if type(input_image) is np.ndarray:
-            output = sitk.GetArrayFromImage(output)
+        self.Resampler.SetOutputDirection(input_image_handle.GetDirection())
+        self.Resampler.SetOutputOrigin(input_image_handle.GetOrigin())
+        output = self.Resampler.Execute(input_image_handle)
         return output
 
 
