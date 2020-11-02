@@ -18,7 +18,7 @@ class ImageResampler(object):
         """
         assert type(input_image_handle) is sitk.Image, 'You need to pass a SimpleITK image handle!'
         assert ref_resampling_handle is not None or output_spacing is not None, 'You need to either provide a ' \
-                                                                                'reference handle  for resample, or ' \
+                                                                                'reference handle for resample, or ' \
                                                                                 'output_spacing'
         if output_spacing is None:
             output_spacing = ref_resampling_handle.GetSpacing()
