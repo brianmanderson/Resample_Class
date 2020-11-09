@@ -23,9 +23,9 @@ class ImageResampler(object):
         if output_spacing is None:
             output_spacing = ref_resampling_handle.GetSpacing()
         self.Resampler.SetOutputSpacing(output_spacing)
-        if interpolator is 'Linear':
+        if interpolator == 'Linear':
             self.Resampler.SetInterpolator(sitk.sitkLinear)
-        elif interpolator is 'Nearest':
+        elif interpolator == 'Nearest':
             self.Resampler.SetInterpolator(sitk.sitkNearestNeighbor)
         if ref_resampling_handle is not None:
             self.Resampler.SetOutputDirection(ref_resampling_handle.GetDirection())
