@@ -23,6 +23,7 @@ class ImageResampler(object):
         if output_spacing is None:
             output_spacing = ref_resampling_handle.GetSpacing()
         self.Resampler.SetOutputSpacing(output_spacing)
+        self.Resampler.SetOutputOrigin(input_image_handle.GetOrigin())
         if interpolator == 'Linear':
             self.Resampler.SetInterpolator(sitk.sitkLinear)
         elif interpolator == 'Nearest':
