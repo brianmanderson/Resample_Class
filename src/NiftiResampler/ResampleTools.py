@@ -39,6 +39,8 @@ class ImageResampler(object):
             new_size = np.ceil(new_size).astype(np.int)  # Image dimensions are in integers
             new_size = [np.int(i) for i in new_size]
             self.Resampler.SetSize(new_size)
+            self.Resampler.SetOutputDirection(input_image_handle.GetDirection())
+            self.Resampler.SetOutputOrigin(input_image_handle.GetOrigin())
         output = self.Resampler.Execute(input_image_handle)
         return output
 
