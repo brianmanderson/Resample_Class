@@ -21,7 +21,7 @@ class ImageResampler(object):
         assert ref_resampling_handle is not None or output_spacing is not None, 'You need to either provide a ' \
                                                                                 'reference handle for resample, or ' \
                                                                                 'output_spacing'
-        assert not isinstance(empty_value, (int, float)), 'Empty value needs to be int or float'
+        assert isinstance(empty_value, (int, float)), 'Empty value needs to be int or float'
         if output_spacing is None:
             output_spacing = ref_resampling_handle.GetSpacing()
         self.Resampler.SetOutputSpacing(output_spacing)
