@@ -8,7 +8,7 @@ class ImageResampler(object):
     def __init__(self):
         self.Resampler = sitk.ResampleImageFilter()
     def resample_image(self, input_image_handle, ref_resampling_handle=None, output_spacing=None,
-                       interpolator='Linear', empty_value=None):
+                       interpolator='Linear', empty_value=None, output_size=None):
         """
         :param input_image_handle: SimpleITK image handle that will be resampled
         :param ref_resampling_handle: a reference SimpleITK image handle that has the desired dimensions
@@ -21,6 +21,9 @@ class ImageResampler(object):
         assert ref_resampling_handle is not None or output_spacing is not None, 'You need to either provide a ' \
                                                                                 'reference handle for resample, or ' \
                                                                                 'output_spacing'
+        assert max([ref_resampling_handle is not None or output_spacing
+                    is not None or output_size is not None]), 'You need to either provide a ' \
+                                                              'reference handle for resample, or output_spacing'
         if output_spacing is None:
             output_spacing = ref_resampling_handle.GetSpacing()
         self.Resampler.SetOutputSpacing(output_spacing)
@@ -33,7 +36,11 @@ class ImageResampler(object):
             self.Resampler.SetOutputDirection(ref_resampling_handle.GetDirection())
             self.Resampler.SetOutputOrigin(ref_resampling_handle.GetOrigin())
             self.Resampler.SetSize(ref_resampling_handle.GetSize())
-        else:
+        elif output_size is not None:
+            self.Resampler.SetSize(output_size)
+            self.Resampler.SetOutputDirection(input_image_handle.GetDirection())
+            self.Resampler.SetOutputOrigin(input_image_handle.GetOrigin())
+        elif output_spacing is not None:
             orig_size = np.array(input_image_handle.GetSize(),dtype=np.int)
             orig_spacing = np.asarray(input_image_handle.GetSpacing())
             new_size = orig_size * (orig_spacing / output_spacing)
