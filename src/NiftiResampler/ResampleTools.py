@@ -41,7 +41,6 @@ class ImageResampler(object):
         elif output_size is not None:
             self.Resampler.SetSize(output_size)
             self.Resampler.SetOutputDirection(input_image_handle.GetDirection())
-            self.Resampler.SetOutputOrigin(input_image_handle.GetOrigin())
         elif output_spacing is not None:
             orig_size = np.array(input_image_handle.GetSize(),dtype=np.int)
             orig_spacing = np.asarray(input_image_handle.GetSpacing())
@@ -50,7 +49,6 @@ class ImageResampler(object):
             new_size = [np.int(i) for i in new_size]
             self.Resampler.SetSize(new_size)
             self.Resampler.SetOutputDirection(input_image_handle.GetDirection())
-            self.Resampler.SetOutputOrigin(input_image_handle.GetOrigin())
         if empty_value is None:
             empty_value = np.float64(sitk.GetArrayViewFromImage(input_image_handle).min())
         self.Resampler.SetDefaultPixelValue(float(empty_value))
