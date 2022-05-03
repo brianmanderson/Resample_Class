@@ -8,7 +8,7 @@ class ImageResampler(object):
     def __init__(self):
         self.Resampler = sitk.ResampleImageFilter()
     def resample_image(self, input_image_handle, ref_resampling_handle=None, output_spacing=None,
-                       interpolator='Linear', empty_value=None, output_size=None):
+                       interpolator='Linear', empty_value=None, output_size=None, output_origin=None):
         """
         :param input_image_handle: SimpleITK image handle that will be resampled
         :param ref_resampling_handle: a reference SimpleITK image handle that has the desired dimensions
@@ -26,8 +26,10 @@ class ImageResampler(object):
                                                               'reference handle for resample, or output_spacing'
         if output_spacing is None:
             output_spacing = ref_resampling_handle.GetSpacing()
+        if output_origin is None:
+            output_origin = input_image_handle.GetOrigin()
         self.Resampler.SetOutputSpacing(output_spacing)
-        self.Resampler.SetOutputOrigin(input_image_handle.GetOrigin())
+        self.Resampler.SetOutputOrigin(output_origin)
         if interpolator == 'Linear':
             self.Resampler.SetInterpolator(sitk.sitkLinear)
         elif interpolator == 'Nearest':
