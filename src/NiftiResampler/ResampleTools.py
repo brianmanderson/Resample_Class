@@ -42,11 +42,11 @@ class ImageResampler(object):
             self.Resampler.SetSize(output_size)
             self.Resampler.SetOutputDirection(input_image_handle.GetDirection())
         elif output_spacing is not None:
-            orig_size = np.array(input_image_handle.GetSize(),dtype=np.int)
+            orig_size = np.array(input_image_handle.GetSize(), dtype=int)
             orig_spacing = np.asarray(input_image_handle.GetSpacing())
             new_size = orig_size * (orig_spacing / output_spacing)
-            new_size = np.ceil(new_size).astype(np.int)  # Image dimensions are in integers
-            new_size = [np.int(i) for i in new_size]
+            new_size = np.ceil(new_size).astype(int)  # Image dimensions are in integers
+            new_size = [int(i) for i in new_size]
             self.Resampler.SetSize(new_size)
             self.Resampler.SetOutputDirection(input_image_handle.GetDirection())
         if empty_value is None:
